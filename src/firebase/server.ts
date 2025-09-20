@@ -1,5 +1,10 @@
+import { UserModel } from "../models/UserModel";
 import { db } from "./config";
 import { auth } from "./config";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 import {
   addDoc,
   collection,
@@ -75,4 +80,49 @@ const deleteDoc = async (collection: string, docId: string) => {
   await firestoreDeleteDoc(doc(db, collection, docId));
   return { success: true, id: docId };
 };
-export { deleteDoc, updateDoc, createDoc, readDocs };
+const registerWithEmail = async (
+  displayName: string,
+  email: string,
+  phoneNumber: string,
+  password: string
+) => {
+  try {
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+    const user = userCredential.user;
+    const userData: UserModel = {
+      id: user.uid,
+      email: user.email || "",
+      displayName: displayName,
+      phoneNumber: phoneNumber,
+    };
+    await createDoc({ collectionName: "user", data: userData });
+    return { user: userCredential.user };
+  } catch (e) {
+    console.log(`error function register ${e}`);
+  }
+};
+const loginWithEmail = async (email: string, password: string) => {
+  try {
+    const userCredential = await signInWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+    return { user: userCredential.user };
+  } catch (e) {
+    console.log(`error function login ${e}`);
+    return { error: e.message };
+  }
+};
+export {
+  deleteDoc,
+  updateDoc,
+  createDoc,
+  readDocs,
+  registerWithEmail,
+  loginWithEmail,
+};

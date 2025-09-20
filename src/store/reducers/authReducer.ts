@@ -12,7 +12,7 @@ const authSlice = createSlice({
     addAuth: (state, action) => {
       state.authData = action.payload;
     },
-    removeAuth: (state, _action) => {
+    removeAuth: (state) => {
       state.authData = null;
     },
     updateAuth: (state, action) => {

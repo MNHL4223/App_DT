@@ -1,38 +1,36 @@
 import {
   View,
   Text,
-  Dimensions,
   StyleSheet,
   TextInput,
   Button,
   ScrollView,
 } from "react-native";
-import { useDispatch } from "react-redux";
 import React, { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
-import { windowHeight, windowWidth } from "../styles/globalStyle";
-import { addAuth } from "../store/reducers/authReducer";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { windowWidth } from "../styles/globalStyle";
+import { registerWithEmail } from "../firebase/server";
 const RegisterScreen = () => {
   const navigation = useNavigation();
   const [profile, setProfile] = useState({
-    name: "",
-    phone: "",
+    displayName: "",
+    phoneNumber: "",
     email: "",
     pass: "",
   });
-  const dispatch = useDispatch();
+
   const handleRegister = async () => {
-    try {
-      if (profile.email && profile.pass) {
-        dispatch(addAuth(profile));
-        await AsyncStorage.setItem("user", JSON.stringify(profile));
-        const test = await AsyncStorage.getItem("user");
-        console.log(`dl test ${test}`);
-        navigation.goBack();
-      }
-    } catch (e) {
-      console.log(`Error button register: ${e}`);
+    const result = await registerWithEmail(
+      profile.displayName,
+      profile.email,
+      profile.phoneNumber,
+      profile.pass
+    );
+    if (result) {
+      console.log("Register success:", result);
+      navigation.goBack();
+    } else {
+      console.log("Register failed");
     }
   };
   return (
@@ -43,14 +41,14 @@ const RegisterScreen = () => {
       <ScrollView>
         <TextInput
           style={styles.containerInput}
-          value={profile.name}
-          onChangeText={(text) => setProfile({ ...profile, name: text })}
+          value={profile.displayName}
+          onChangeText={(text) => setProfile({ ...profile, displayName: text })}
           placeholder="Họ và tên"
         />
         <TextInput
           style={styles.containerInput}
-          value={profile.phone}
-          onChangeText={(text) => setProfile({ ...profile, phone: text })}
+          value={profile.phoneNumber}
+          onChangeText={(text) => setProfile({ ...profile, phoneNumber: text })}
           placeholder="Số điện thoại"
         />
         <TextInput
