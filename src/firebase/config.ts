@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
 const firebaseConfig = {
   apiKey: "AIzaSyCFeiOZWK9MqNGS2eMm34xCoCvSofbdAsY",
   authDomain: "app-dt-f68d8.firebaseapp.com",
@@ -9,9 +10,8 @@ const firebaseConfig = {
   appId: "1:887642896280:web:edf75a391503e1c2cbdded",
   measurementId: "G-8G2KS6CLZQ",
 };
-
-// Khởi tạo firebase
 const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-// Khởi tạo firebase authen
-export const auth = getAuth(app);
+export { app, auth, db };

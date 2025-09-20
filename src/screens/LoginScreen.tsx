@@ -6,22 +6,36 @@ import {
   Dimensions,
   Button,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
-
-const windowWidth = Dimensions.get("window").width;
-const windowHeight = Dimensions.get("window").height;
+import { windowWidth } from "../styles/globalStyle";
+import { app, auth } from "../firebase/config";
 
 const LoginScreen = () => {
   const navigation = useNavigation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [stateFre, setStateFre] = useState("Loading...");
+  const [loginError, setLoginError] = useState("");
+
+  useEffect(() => {
+    try {
+      const connect = auth;
+      if (connect) {
+        console.log("connect sucess");
+        setStateFre("=)");
+      } else {
+        console.log("error connect firebase");
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  });
 
   const handleLogin = () => {
     console.log("Button on click");
   };
-
-  const handleRegiter = () => {
+  const handleRegister = () => {
     navigation.navigate("Register" as never);
   };
   return (
@@ -40,8 +54,12 @@ const LoginScreen = () => {
         placeholder="Mật khẩu"
       />
       <View style={styles.row}>
-        <Button title="Đăng ký" onPress={handleRegiter} />
+        <Button title="Đăng ký" onPress={handleRegister} />
         <Button title="Đăng nhập" onPress={handleLogin} />
+      </View>
+      <View>
+        <Text>{stateFre}</Text>
+        {loginError ? <Text style={{ color: "red" }}>{loginError}</Text> : null}
       </View>
     </View>
   );
